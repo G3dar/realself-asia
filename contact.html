@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact Real Self about partnership opportunities in China. Start the conversation today.">
+    <title>Contact | Real Self</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100'/><text y='.9em' font-size='90' fill='%23fff'>R</text></svg>">
+
+    <style>
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-3xl);
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-2xl);
+        }
+
+        .contact-info__item {
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: flex-start;
+        }
+
+        .contact-info__icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            color: var(--color-gray-400);
+        }
+
+        .contact-info__content h3 {
+            font-size: 1rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .contact-info__content p {
+            color: var(--color-gray-400);
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .contact-info__content a {
+            color: var(--color-white);
+        }
+
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__inner">
+                <a href="index.html" class="logo">Real<span>Self</span></a>
+
+                <nav class="nav">
+                    <ul class="nav__list">
+                        <li><a href="experience.html" class="nav__link" data-i18n="nav.experience">Experience</a></li>
+                        <li><a href="scenarios.html" class="nav__link" data-i18n="nav.scenarios">Calculator</a></li>
+                        <li><a href="investment.html" class="nav__link" data-i18n="nav.investment">Investment</a></li>
+                        <li><a href="partnership.html" class="nav__link" data-i18n="nav.partnership">Partnership</a></li>
+                        <li><a href="contact.html" class="nav__link" data-i18n="nav.contact">Contact</a></li>
+                    </ul>
+
+                    <div class="lang-toggle">
+                        <button class="lang-toggle__btn active" data-lang="en">EN</button>
+                        <button class="lang-toggle__btn" data-lang="zh">中文</button>
+                    </div>
+
+                    <button class="menu-toggle" aria-label="Toggle menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="section" style="padding-top: 150px; padding-bottom: var(--spacing-xl);">
+        <div class="container">
+            <h1 class="mb-md" data-i18n="contact.title">Start the Conversation</h1>
+            <p class="hero__tagline" style="font-size: 1.25rem;" data-i18n="contact.subtitle">Let's explore how Real Self can transform the immersive entertainment landscape in China</p>
+        </div>
+    </section>
+
+    <!-- Contact Form & Info -->
+    <section class="section" style="padding-top: 0;">
+        <div class="container">
+            <div class="contact-grid">
+                <!-- Form -->
+                <div>
+                    <form class="form" id="contactForm">
+                        <div class="form__group">
+                            <label class="form__label" for="name" data-i18n="contact.form.name">Full Name</label>
+                            <input type="text" class="form__input" id="name" name="name" required>
+                        </div>
+
+                        <div class="form__group">
+                            <label class="form__label" for="company" data-i18n="contact.form.company">Company Name</label>
+                            <input type="text" class="form__input" id="company" name="company" required>
+                        </div>
+
+                        <div class="form__group">
+                            <label class="form__label" for="email" data-i18n="contact.form.email">Email Address</label>
+                            <input type="email" class="form__input" id="email" name="email" required>
+                        </div>
+
+                        <div class="form__group">
+                            <label class="form__label" for="phone" data-i18n="contact.form.phone">Phone Number</label>
+                            <input type="tel" class="form__input" id="phone" name="phone">
+                        </div>
+
+                        <div class="form__group">
+                            <label class="form__label" for="city" data-i18n="contact.form.city">Target City</label>
+                            <select class="form__select" id="city" name="city" required>
+                                <option value="" data-i18n="contact.form.cityPlaceholder">Select a city</option>
+                                <option value="shanghai" data-i18n="contact.form.cities.shanghai">Shanghai</option>
+                                <option value="beijing" data-i18n="contact.form.cities.beijing">Beijing</option>
+                                <option value="shenzhen" data-i18n="contact.form.cities.shenzhen">Shenzhen</option>
+                                <option value="guangzhou" data-i18n="contact.form.cities.guangzhou">Guangzhou</option>
+                                <option value="chengdu" data-i18n="contact.form.cities.chengdu">Chengdu</option>
+                                <option value="other" data-i18n="contact.form.cities.other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form__group">
+                            <label class="form__label" for="message" data-i18n="contact.form.message">Tell us about your vision</label>
+                            <textarea class="form__textarea" id="message" name="message" data-i18n-placeholder="contact.form.messagePlaceholder" placeholder="Share your background, venue ideas, and questions..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn--primary" style="width: 100%;">
+                            <span data-i18n="contact.form.submit">Send Message</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <div class="contact-info">
+                        <div>
+                            <h2 class="mb-lg" data-i18n="contact.info.title">Contact Information</h2>
+
+                            <div class="contact-info__item">
+                                <svg class="contact-info__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                <div class="contact-info__content">
+                                    <h3>Email</h3>
+                                    <p><a href="mailto:partnerships@realselfexperience.com" data-i18n="contact.info.email">partnerships@realselfexperience.com</a></p>
+                                </div>
+                            </div>
+
+                            <div class="contact-info__item">
+                                <svg class="contact-info__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                <div class="contact-info__content">
+                                    <h3>Current Location</h3>
+                                    <p data-i18n="contact.info.location">Currently performing in Barcelona, Spain</p>
+                                </div>
+                            </div>
+
+                            <div class="contact-info__item">
+                                <svg class="contact-info__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="2" y1="12" x2="22" y2="12"/>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                </svg>
+                                <div class="contact-info__content">
+                                    <h3>Website</h3>
+                                    <p><a href="https://realselfexperience.com" target="_blank">realselfexperience.com</a></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats Card -->
+                        <div class="card" style="margin-top: var(--spacing-xl);">
+                            <h3 class="card__title mb-lg">Quick Facts</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">100,000+</div>
+                                    <div style="font-size: 0.75rem; color: var(--color-gray-500); text-transform: uppercase; letter-spacing: 0.1em;">Participants</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">98%</div>
+                                    <div style="font-size: 0.75rem; color: var(--color-gray-500); text-transform: uppercase; letter-spacing: 0.1em;">Satisfaction</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">75 min</div>
+                                    <div style="font-size: 0.75rem; color: var(--color-gray-500); text-transform: uppercase; letter-spacing: 0.1em;">Duration</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 1.5rem; font-weight: 700;">2016</div>
+                                    <div style="font-size: 0.75rem; color: var(--color-gray-500); text-transform: uppercase; letter-spacing: 0.1em;">Founded</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Links -->
+                        <div style="margin-top: var(--spacing-xl);">
+                            <h3 class="mb-lg">Follow Us</h3>
+                            <div style="display: flex; gap: var(--spacing-md);">
+                                <a href="#" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--color-gray-700); transition: border-color 0.3s;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                                    </svg>
+                                </a>
+                                <a href="#" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--color-gray-700); transition: border-color 0.3s;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
+                                        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
+                                    </svg>
+                                </a>
+                                <a href="#" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--color-gray-700); transition: border-color 0.3s;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                                        <rect x="2" y="9" width="4" height="12"/>
+                                        <circle cx="4" cy="4" r="2"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section section--dark">
+        <div class="container">
+            <h2 class="text-center mb-2xl">Frequently Asked Questions</h2>
+
+            <div class="grid grid--2">
+                <div class="card">
+                    <h3 class="card__title">What's the minimum venue size?</h3>
+                    <p class="card__text">For 150 participants, you'll need approximately 180m² of open floor space with at least 5m ceiling height for projector mounting.</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card__title">How long does setup take?</h3>
+                    <p class="card__text">From agreement signing to grand opening typically takes 5-7 months, including venue preparation, equipment installation, and staff training.</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card__title">Can we customize the experience?</h3>
+                    <p class="card__text">The core experience remains consistent globally, but we adapt audio content and certain elements for cultural relevance in the Chinese market.</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card__title">What about competition?</h3>
+                    <p class="card__text">Real Self offers exclusivity for mainland China, and the unique anonymous participation format differentiates it from visual-only immersive experiences.</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card__title">Who handles ticket sales?</h3>
+                    <p class="card__text">The local partner manages all ticketing through preferred platforms (Damai, Maoyan, etc.). We provide marketing assets and guidance.</p>
+                </div>
+
+                <div class="card">
+                    <h3 class="card__title">What if attendance is low?</h3>
+                    <p class="card__text">The minimum guarantee structure protects both parties. We also provide marketing consultation to optimize attendance based on our global experience.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__inner">
+                <p class="footer__text">
+                    &copy; 2024 <span data-i18n="footer.copyright">Real Self Experience. All rights reserved.</span>
+                </p>
+                <div class="footer__links">
+                    <a href="#" class="footer__link" data-i18n="footer.links.privacy">Privacy Policy</a>
+                    <a href="#" class="footer__link" data-i18n="footer.links.terms">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+</html>
