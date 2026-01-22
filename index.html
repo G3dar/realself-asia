@@ -282,15 +282,18 @@
         const error = document.getElementById('errorMsg');
         const landing = document.getElementById('landing');
 
-        // Password hash (simple obfuscation - not high security, just light protection)
-        const correctCode = 'Thankyou';
+        // Password check - accepts variations of "thank you"
+        function isValidPassword(input) {
+            const normalized = input.toLowerCase().replace(/\s+/g, '');
+            return normalized === 'thankyou';
+        }
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
             const entered = input.value.trim();
 
-            if (entered === correctCode) {
+            if (isValidPassword(entered)) {
                 // Success - redirect to home
                 landing.classList.add('landing--success');
 

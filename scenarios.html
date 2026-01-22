@@ -3,22 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Calculate your Real Self venue investment and projected returns with our interactive calculator.">
-    <title>Venue Calculator | Real Self</title>
+    <meta name="description" content="Real Self venue scenarios - Compare investment and returns across three venue configurations.">
+    <title>Scenarios | Real Self</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <!-- Styles -->
     <link rel="stylesheet" href="css/styles.css">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100'/><text y='.9em' font-size='90' fill='%23fff'>R</text></svg>">
+
+    <style>
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-2xl);
+        }
+
+        @media (max-width: 900px) {
+            .scenario-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scenario-card {
+            background: var(--color-gray-900);
+            border: 1px solid var(--color-gray-700);
+            padding: var(--spacing-2xl);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            border-color: var(--color-white);
+            transform: translateY(-4px);
+        }
+
+        .scenario-card--featured {
+            border-color: var(--color-white);
+            background: var(--color-gray-800);
+        }
+
+        .scenario-card--featured::before {
+            content: 'RECOMMENDED';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--color-white);
+            color: var(--color-black);
+            font-size: 0.625rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.75rem;
+        }
+
+        .scenario-card__header {
+            text-align: center;
+            padding-bottom: var(--spacing-xl);
+            border-bottom: 1px solid var(--color-gray-700);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .scenario-card__size {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .scenario-card__capacity {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .scenario-card__capacity span {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--color-gray-400);
+        }
+
+        .scenario-card__metric {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .scenario-card__metric:last-child {
+            margin-bottom: 0;
+        }
+
+        .scenario-card__label {
+            font-size: 0.75rem;
+            color: var(--color-gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .scenario-card__value {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .scenario-card__value--highlight {
+            color: var(--color-white);
+            font-size: 2rem;
+        }
+
+        .scenario-card__value--muted {
+            color: var(--color-gray-300);
+        }
+
+        .scenario-card__divider {
+            height: 1px;
+            background: var(--color-gray-700);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .scenario-card__footer {
+            text-align: center;
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--color-gray-700);
+            margin-top: var(--spacing-xl);
+        }
+
+        .scenario-card__breakeven {
+            font-size: 0.875rem;
+            color: var(--color-gray-300);
+        }
+
+        .scenario-card__breakeven strong {
+            color: var(--color-white);
+        }
+
+        /* Summary Stats */
+        .summary-intro {
+            max-width: 700px;
+            margin: 0 auto var(--spacing-3xl);
+            text-align: center;
+        }
+
+        .summary-intro p {
+            font-size: 1.125rem;
+            color: var(--color-gray-300);
+        }
+
+        /* Assumptions banner */
+        .assumptions-banner {
+            background: var(--color-gray-800);
+            border: 1px solid var(--color-gray-700);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            margin-top: var(--spacing-3xl);
+            text-align: center;
+        }
+
+        .assumptions-banner__title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .assumptions-banner__list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+            color: var(--color-gray-300);
+            font-size: 0.875rem;
+        }
+
+        .assumptions-banner__list span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .assumptions-banner__list span::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: var(--color-gray-500);
+            border-radius: 50%;
+        }
+
+        /* Comparison section */
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .comparison-header h2 {
+            margin-bottom: 0;
+        }
+
+        /* Scale potential cards */
+        .scale-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-lg);
+        }
+
+        @media (max-width: 768px) {
+            .scale-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .scale-card {
+            background: var(--color-gray-900);
+            border: 1px solid var(--color-gray-700);
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .scale-card__venues {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .scale-card__revenue {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .scale-card__cities {
+            font-size: 0.875rem;
+            color: var(--color-gray-400);
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -29,10 +261,10 @@
 
                 <nav class="nav">
                     <ul class="nav__list">
-                        <li><a href="experience.html" class="nav__link" data-i18n="nav.experience">Experience</a></li>
-                        <li><a href="scenarios.html" class="nav__link" data-i18n="nav.scenarios">Calculator</a></li>
-                        <li><a href="investment.html" class="nav__link" data-i18n="nav.investment">Investment</a></li>
-                        <li><a href="partnership.html" class="nav__link" data-i18n="nav.partnership">Partnership</a></li>
+                        <li><a href="experience.html" class="nav__link">Experience</a></li>
+                        <li><a href="scenarios.html" class="nav__link">Scenarios</a></li>
+                        <li><a href="investment.html" class="nav__link">Breakdown</a></li>
+                        <li><a href="partnership.html" class="nav__link">Partnership</a></li>
                     </ul>
 
                     <div class="lang-toggle">
@@ -51,404 +283,176 @@
     </header>
 
     <!-- Page Header -->
-    <section class="section" style="padding-top: 150px; padding-bottom: var(--spacing-xl);">
+    <section class="section" style="padding-top: 150px; padding-bottom: var(--spacing-lg);">
         <div class="container">
-            <h1 class="mb-md" data-i18n="scenarios.title">Venue Calculator</h1>
-            <p class="hero__tagline" style="font-size: 1.25rem;" data-i18n="scenarios.subtitle">Customize your venue specifications and see projected returns</p>
+            <h1 class="mb-md">Venue Scenarios</h1>
+            <p class="hero__tagline" style="font-size: 1.25rem;">Investment overview for three venue configurations</p>
         </div>
     </section>
 
-    <!-- Calculator -->
-    <section class="section" style="padding-top: 0;" id="calculator">
+    <!-- Scenarios Summary -->
+    <section class="section" style="padding-top: 0;">
         <div class="container">
-            <div class="calculator">
-                <!-- Revenue Share Banner -->
-                <div class="revenue-share-banner">
-                    <span data-i18n="scenarios.revenueSplit">Revenue Split:</span>
-                    <strong>Partner 70% / Real Self 30%</strong>
-                </div>
+            <div class="summary-intro">
+                <p>Each scenario represents a different venue capacity, with corresponding investment requirements and projected returns. All figures based on standard operating assumptions.</p>
+            </div>
 
-                <div class="calculator__grid">
-                    <!-- Inputs Column -->
-                    <div class="calculator__inputs">
-                        <!-- Section: Venue Configuration -->
-                        <h3 class="input-section-title" data-i18n="scenarios.sections.venue">Venue Configuration</h3>
-
-                        <!-- Capacity Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.capacity">Venue Capacity</span>
-                                <span class="input-group__value" id="capacityValue">250 people</span>
-                            </div>
-                            <input type="range" id="capacity" min="100" max="500" step="10" value="250">
-                        </div>
-
-                        <!-- Days Per Week Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.daysPerWeek">Days per Week</span>
-                                <span class="input-group__value" id="daysPerWeekValue">4 days</span>
-                            </div>
-                            <input type="range" id="daysPerWeek" min="3" max="7" step="1" value="4">
-                        </div>
-
-                        <!-- Shows Per Day Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.showsPerDay">Shows per Day</span>
-                                <span class="input-group__value" id="showsPerDayValue">3</span>
-                            </div>
-                            <input type="range" id="showsPerDay" min="2" max="4" step="1" value="3">
-                        </div>
-
-                        <!-- Occupancy Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.occupancy">Average Occupancy</span>
-                                <span class="input-group__value" id="occupancyValue">70%</span>
-                            </div>
-                            <input type="range" id="occupancy" min="50" max="100" step="5" value="70">
-                        </div>
-
-                        <!-- Section: Pricing -->
-                        <h3 class="input-section-title" data-i18n="scenarios.sections.pricing">Pricing</h3>
-
-                        <!-- Ticket Price Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.ticketPrice">Ticket Price</span>
-                                <span class="input-group__value" id="ticketPriceValue">$32 USD</span>
-                            </div>
-                            <input type="range" id="ticketPrice" min="25" max="50" step="1" value="32">
-                        </div>
-
-                        <!-- VIP Price Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.vipPrice">VIP Upgrade Price</span>
-                                <span class="input-group__value" id="vipPriceValue">$45 USD</span>
-                            </div>
-                            <input type="range" id="vipPrice" min="35" max="60" step="1" value="45">
-                        </div>
-
-                        <!-- Section: Operating Assumptions -->
-                        <h3 class="input-section-title" data-i18n="scenarios.sections.operating">Operating Assumptions</h3>
-
-                        <!-- Costume Replacement Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.costumeReplacement">Costume Replacement/Week</span>
-                                <span class="input-group__value" id="costumeReplacementValue">25%</span>
-                            </div>
-                            <input type="range" id="costumeReplacement" min="25" max="100" step="5" value="25">
-                        </div>
-
-                        <!-- Mask Replacement Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.maskReplacement">Mask Replacement/Week</span>
-                                <span class="input-group__value" id="maskReplacementValue">100%</span>
-                            </div>
-                            <input type="range" id="maskReplacement" min="25" max="100" step="5" value="100">
-                        </div>
-
-                        <!-- Merch Conversion Slider -->
-                        <div class="input-group">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.merchConversion">Merch Purchase Rate</span>
-                                <span class="input-group__value" id="merchConversionValue">70%</span>
-                            </div>
-                            <input type="range" id="merchConversion" min="50" max="90" step="5" value="70">
-                        </div>
-
-                        <!-- Corporate Events Toggle -->
-                        <div class="input-group input-group--toggle">
-                            <div class="input-group__label">
-                                <span data-i18n="scenarios.inputs.corporateEvents">Corporate Events</span>
-                                <span class="input-group__hint" data-i18n="scenarios.inputs.corporateHint">(200 pax/week @ $45)</span>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" id="corporateEventsToggle">
-                                <span class="toggle__slider"></span>
-                            </label>
-                        </div>
+            <div class="scenario-grid">
+                <!-- Small Venue -->
+                <div class="scenario-card">
+                    <div class="scenario-card__header">
+                        <div class="scenario-card__size">Small Venue</div>
+                        <div class="scenario-card__capacity">150 <span>people</span></div>
                     </div>
 
-                    <!-- Results Column -->
-                    <div class="calculator__results">
-                        <!-- Venue Requirements -->
-                        <div class="results-section">
-                            <h4 class="results-section__title" data-i18n="scenarios.results.venueTitle">Venue Requirements</h4>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.areaNeeded">Area Needed</div>
-                                <div class="result-card__value" id="resultArea">300 m²</div>
-                            </div>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.projectors">Projectors Required</div>
-                                <div class="result-card__value" id="resultProjectors">25</div>
-                            </div>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.partnerInvestment">Partner Investment</div>
-                                <div class="result-card__value" id="resultInvestment">$320K - $550K</div>
-                            </div>
-                        </div>
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Investment</div>
+                        <div class="scenario-card__value">$236K - $400K</div>
+                    </div>
 
-                        <!-- Weekly Revenue Breakdown -->
-                        <div class="results-section">
-                            <h4 class="results-section__title" data-i18n="scenarios.results.weeklyRevenueTitle">Weekly Revenue</h4>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.ticketsPerWeek">Tickets/Week</div>
-                                <div class="result-card__value" id="resultTicketsPerWeek">2,100</div>
-                            </div>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.weeklyTickets">Ticket Revenue</div>
-                                <div class="result-card__value" id="resultWeeklyTickets">$67,200</div>
-                            </div>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.weeklyVip">VIP Upgrades (10%)</div>
-                                <div class="result-card__value" id="resultWeeklyVip">$9,450</div>
-                            </div>
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Weekly Revenue</div>
+                        <div class="scenario-card__value scenario-card__value--muted">$56,000</div>
+                    </div>
 
-                            <!-- Expandable Additional Revenue -->
-                            <button class="expand-btn" data-target="additionalRevenue">
-                                <span data-i18n="scenarios.results.additionalRevenue">Additional Revenue</span>
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </button>
-                            <div class="expandable-section" id="additionalRevenue">
-                                <div class="result-card result-card--small">
-                                    <div class="result-card__label" data-i18n="scenarios.results.merch">Merchandise</div>
-                                    <div class="result-card__value" id="resultWeeklyMerch">$8,820</div>
-                                </div>
-                                <div class="result-card result-card--small">
-                                    <div class="result-card__label" data-i18n="scenarios.results.concessions">Concessions</div>
-                                    <div class="result-card__value" id="resultWeeklyConcessions">$7,350</div>
-                                </div>
-                                <div class="result-card result-card--small">
-                                    <div class="result-card__label" data-i18n="scenarios.results.photobooth">Photobooth</div>
-                                    <div class="result-card__value" id="resultWeeklyPhotobooth">$1,092</div>
-                                </div>
-                            </div>
+                    <div class="scenario-card__divider"></div>
 
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.weeklyAdditional">Additional Total</div>
-                                <div class="result-card__value" id="resultWeeklyAdditional">$17,262</div>
-                            </div>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.weeklyCorporate">Corporate Events</div>
-                                <div class="result-card__value" id="resultWeeklyCorporate">$0</div>
-                            </div>
-                            <div class="result-card result-card--total">
-                                <div class="result-card__label" data-i18n="scenarios.results.weeklyTotal">Weekly Total</div>
-                                <div class="result-card__value" id="resultWeeklyRevenue">$93,912</div>
-                            </div>
-                        </div>
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Monthly Profit</div>
+                        <div class="scenario-card__value scenario-card__value--highlight">$117,000</div>
+                    </div>
 
-                        <!-- Costs -->
-                        <div class="results-section">
-                            <h4 class="results-section__title" data-i18n="scenarios.results.costsTitle">Weekly Costs</h4>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.weeklyCosts">Operating Costs</div>
-                                <div class="result-card__value" id="resultWeeklyCosts">$25,000</div>
-                            </div>
-                        </div>
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Annual</div>
+                        <div class="scenario-card__value">$1.4M</div>
+                    </div>
 
-                        <!-- Profit Split -->
-                        <div class="results-section">
-                            <h4 class="results-section__title" data-i18n="scenarios.results.profitSplitTitle">Monthly Profit Split</h4>
-                            <div class="result-card result-card--highlight result-card--partner">
-                                <div class="result-card__label" data-i18n="scenarios.results.partnerShare">Partner (70%)</div>
-                                <div class="result-card__value" id="resultPartnerShare">$193,000</div>
-                            </div>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.realSelfShare">Real Self (30%)</div>
-                                <div class="result-card__value" id="resultRealSelfShare">$121,000</div>
-                            </div>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.breakeven">Breakeven Period</div>
-                                <div class="result-card__value" id="resultBreakeven">2 months</div>
-                            </div>
-                        </div>
-
-                        <!-- Annual -->
-                        <div class="results-section">
-                            <h4 class="results-section__title" data-i18n="scenarios.results.annualTitle">Annual Projections</h4>
-                            <div class="result-card result-card--highlight result-card--large">
-                                <div class="result-card__label" data-i18n="scenarios.results.annualPartner">Partner Annual</div>
-                                <div class="result-card__value" id="resultAnnualPartner">$2.3M</div>
-                            </div>
-                            <div class="result-card">
-                                <div class="result-card__label" data-i18n="scenarios.results.annualRealSelf">Real Self Annual</div>
-                                <div class="result-card__value" id="resultAnnualRealSelf">$1.5M</div>
-                            </div>
-                        </div>
+                    <div class="scenario-card__footer">
+                        <div class="scenario-card__breakeven">Breakeven: <strong>~3 months</strong></div>
                     </div>
                 </div>
 
-                <!-- Chart -->
-                <div class="chart-container">
-                    <h3 class="chart-container__title" data-i18n="scenarios.chart.title">12-Month Revenue Projection</h3>
-                    <div style="height: 350px;">
-                        <canvas id="revenueChart"></canvas>
+                <!-- Medium Venue (Featured) -->
+                <div class="scenario-card scenario-card--featured">
+                    <div class="scenario-card__header">
+                        <div class="scenario-card__size">Medium Venue</div>
+                        <div class="scenario-card__capacity">250 <span>people</span></div>
+                    </div>
+
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Investment</div>
+                        <div class="scenario-card__value">$320K - $550K</div>
+                    </div>
+
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Weekly Revenue</div>
+                        <div class="scenario-card__value scenario-card__value--muted">$94,000</div>
+                    </div>
+
+                    <div class="scenario-card__divider"></div>
+
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Monthly Profit</div>
+                        <div class="scenario-card__value scenario-card__value--highlight">$193,000</div>
+                    </div>
+
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Annual</div>
+                        <div class="scenario-card__value">$2.3M</div>
+                    </div>
+
+                    <div class="scenario-card__footer">
+                        <div class="scenario-card__breakeven">Breakeven: <strong>~2 months</strong></div>
                     </div>
                 </div>
 
-                <!-- Export Button -->
-                <div class="text-center mt-xl">
-                    <button class="btn btn--outline" id="exportPdf">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                            <polyline points="7 10 12 15 17 10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                        <span data-i18n="common.downloadPdf">Download PDF</span>
-                    </button>
+                <!-- Large Venue -->
+                <div class="scenario-card">
+                    <div class="scenario-card__header">
+                        <div class="scenario-card__size">Large Venue</div>
+                        <div class="scenario-card__capacity">350 <span>people</span></div>
+                    </div>
+
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Investment</div>
+                        <div class="scenario-card__value">$420K - $750K</div>
+                    </div>
+
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Weekly Revenue</div>
+                        <div class="scenario-card__value scenario-card__value--muted">$131,000</div>
+                    </div>
+
+                    <div class="scenario-card__divider"></div>
+
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Monthly Profit</div>
+                        <div class="scenario-card__value scenario-card__value--highlight">$269,000</div>
+                    </div>
+
+                    <div class="scenario-card__metric">
+                        <div class="scenario-card__label">Partner Annual</div>
+                        <div class="scenario-card__value">$3.2M</div>
+                    </div>
+
+                    <div class="scenario-card__footer">
+                        <div class="scenario-card__breakeven">Breakeven: <strong>~2 months</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assumptions -->
+            <div class="assumptions-banner">
+                <div class="assumptions-banner__title">Base Assumptions</div>
+                <div class="assumptions-banner__list">
+                    <span>$32 ticket price</span>
+                    <span>4 days/week</span>
+                    <span>3 shows/day</span>
+                    <span>70% occupancy</span>
+                    <span>All revenue streams included</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Calculation Notes -->
+    <!-- Scale Potential -->
     <section class="section section--dark">
         <div class="container">
-            <h2 class="text-center mb-xl" data-i18n="scenarios.notes.title">Calculation Notes</h2>
-            <div class="grid grid--2">
-                <div class="card">
-                    <h3 class="card__title" data-i18n="scenarios.notes.costsTitle">Operating Costs</h3>
-                    <ul style="list-style: none; color: var(--color-gray-400);">
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.mask">Mask:</span> $1.50/unit</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.costume">Costume replacement:</span> $4.50/unit</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.staff">Staff:</span> 1 per 25 people @ $50/day</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.management">Management:</span> $4,800/week</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.marketing">Marketing:</span> 10% of ticket revenue</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.insurance">Insurance & Misc:</span> $3,000/week</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3 class="card__title" data-i18n="scenarios.notes.revenueTitle">Revenue Sources</h3>
-                    <ul style="list-style: none; color: var(--color-gray-400);">
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.tickets">Tickets:</span> $32 USD base</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.vip">VIP Upgrades:</span> $45 USD (10% conversion)</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.merchNote">Merchandise:</span> $6 avg (~70% buy)</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.concessionsNote">Concessions:</span> $5 avg (~70% buy)</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.photoboothNote">Photobooth:</span> $4 (~13% use)</li>
-                        <li style="margin-bottom: 0.5rem;">- <span data-i18n="scenarios.notes.corporateNote">Corporate:</span> $45/person (200/week)</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="card mt-xl" style="background: var(--color-gray-800); border-color: var(--color-white);">
-                <p style="color: var(--color-gray-300); margin: 0;">
-                    <strong style="color: var(--color-white);" data-i18n="scenarios.notes.venueRent">Venue Rent:</strong>
-                    <span data-i18n="scenarios.notes.venueRentNote">Not included - partner provides the space as part of their contribution.</span>
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Revenue Share Explanation -->
-    <section class="section">
-        <div class="container">
-            <h2 class="text-center mb-xl" data-i18n="scenarios.share.title">Revenue Share Structure</h2>
-            <div class="grid grid--2">
-                <div class="card" style="border: 2px solid var(--color-white);">
-                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem;">70%</div>
-                    <h3 class="card__title" data-i18n="scenarios.share.partner">Partner Receives</h3>
-                    <p class="card__text" data-i18n="scenarios.share.partnerDesc">70% of gross profit (revenue minus operating costs)</p>
-                </div>
-                <div class="card">
-                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem; color: var(--color-gray-400);">30%</div>
-                    <h3 class="card__title" data-i18n="scenarios.share.realself">Real Self Receives</h3>
-                    <p class="card__text" data-i18n="scenarios.share.realselfDesc">30% of gross revenue (before costs)</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Scenario Comparison -->
-    <section class="section section--dark">
-        <div class="container">
-            <h2 class="text-center mb-xl" data-i18n="scenarios.comparison.title">Quick Scenario Comparison</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th data-i18n="scenarios.comparison.scenario">Scenario</th>
-                            <th data-i18n="scenarios.comparison.capacity">Capacity</th>
-                            <th data-i18n="scenarios.comparison.investment">Investment</th>
-                            <th data-i18n="scenarios.comparison.weeklyGross">Weekly Gross</th>
-                            <th data-i18n="scenarios.comparison.partnerAnnual">Partner Annual (70%)</th>
-                            <th data-i18n="scenarios.comparison.breakeven">Breakeven</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td data-i18n="scenarios.comparison.small">Small Venue</td>
-                            <td>150 pax</td>
-                            <td>$236K - $400K</td>
-                            <td>$56,000</td>
-                            <td>$1.4M</td>
-                            <td>~3 months</td>
-                        </tr>
-                        <tr>
-                            <td data-i18n="scenarios.comparison.medium">Medium Venue</td>
-                            <td>250 pax</td>
-                            <td>$320K - $550K</td>
-                            <td>$94,000</td>
-                            <td>$2.3M</td>
-                            <td>~2 months</td>
-                        </tr>
-                        <tr>
-                            <td data-i18n="scenarios.comparison.large">Large Venue</td>
-                            <td>350 pax</td>
-                            <td>$420K - $750K</td>
-                            <td>$131,000</td>
-                            <td>$3.2M</td>
-                            <td>~2 months</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p class="text-center mt-lg" style="color: var(--color-gray-500); font-size: 0.875rem;" data-i18n="scenarios.comparison.note">
-                Based on $32 ticket price, 4 days/week, 3 shows/day, 70% occupancy. Includes all revenue streams.
+            <h2 class="text-center mb-xl">Multi-Location Potential</h2>
+            <p class="text-center mb-2xl" style="color: var(--color-gray-400); max-width: 600px; margin-left: auto; margin-right: auto;">
+                Partner annual profit projections based on medium venue (250 capacity) across multiple Tier 1 cities.
             </p>
-        </div>
-    </section>
 
-    <!-- Multi-Location Scale -->
-    <section class="section">
-        <div class="container">
-            <h2 class="text-center mb-xl" data-i18n="scenarios.scale.title">Scaling Potential: Multiple Locations</h2>
-            <div class="grid grid--3">
-                <div class="card text-center">
-                    <h3 class="card__title" style="color: var(--color-gray-400);">1 Venue</h3>
-                    <div style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0;">$2.3M</div>
-                    <p class="card__text" data-i18n="scenarios.scale.oneVenue">Partner annual revenue (30% to Real Self)</p>
+            <div class="scale-grid">
+                <div class="scale-card">
+                    <div class="scale-card__venues">1 Venue</div>
+                    <div class="scale-card__revenue">$2.3M</div>
+                    <div class="scale-card__cities">Shanghai</div>
                 </div>
-                <div class="card text-center">
-                    <h3 class="card__title" style="color: var(--color-gray-400);">3 Venues</h3>
-                    <div style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0;">$6.9M</div>
-                    <p class="card__text" data-i18n="scenarios.scale.threeVenues">Shanghai + Beijing + Shenzhen</p>
+                <div class="scale-card">
+                    <div class="scale-card__venues">3 Venues</div>
+                    <div class="scale-card__revenue">$6.9M</div>
+                    <div class="scale-card__cities">+ Beijing, Shenzhen</div>
                 </div>
-                <div class="card text-center">
-                    <h3 class="card__title" style="color: var(--color-gray-400);">5 Venues</h3>
-                    <div style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0;">$11.5M</div>
-                    <p class="card__text" data-i18n="scenarios.scale.fiveVenues">Tier 1 cities coverage</p>
+                <div class="scale-card">
+                    <div class="scale-card__venues">5 Venues</div>
+                    <div class="scale-card__revenue">$11.5M</div>
+                    <div class="scale-card__cities">+ Guangzhou, Chengdu</div>
                 </div>
             </div>
-            <p class="text-center mt-xl" style="color: var(--color-gray-500);" data-i18n="scenarios.scale.note">
-                Revenue share terms may improve with 3+ locations
-            </p>
         </div>
     </section>
 
     <!-- CTA -->
     <section class="section">
         <div class="container text-center">
-            <h2 class="mb-lg">Ready to Discuss Numbers?</h2>
+            <h2 class="mb-md">Want to Customize These Numbers?</h2>
+            <p class="mb-xl" style="color: var(--color-gray-400); max-width: 500px; margin-left: auto; margin-right: auto;">
+                Explore the detailed breakdown with adjustable parameters to model your specific scenario.
+            </p>
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="investment.html" class="btn btn--primary" data-i18n="nav.investment">Investment Details</a>
-                <a href="partnership.html" class="btn btn--outline" data-i18n="nav.partnership">Partnership</a>
+                <a href="investment.html" class="btn btn--primary">View Detailed Breakdown</a>
+                <a href="partnership.html" class="btn btn--outline">Partnership Model</a>
             </div>
         </div>
     </section>
@@ -458,11 +462,11 @@
         <div class="container">
             <div class="footer__inner">
                 <p class="footer__text">
-                    &copy; 2024 <span data-i18n="footer.copyright">Real Self Experience. All rights reserved.</span>
+                    &copy; 2024 <span>Real Self Experience. All rights reserved.</span>
                 </p>
                 <div class="footer__links">
-                    <a href="#" class="footer__link" data-i18n="footer.links.privacy">Privacy Policy</a>
-                    <a href="#" class="footer__link" data-i18n="footer.links.terms">Terms of Service</a>
+                    <a href="#" class="footer__link">Privacy Policy</a>
+                    <a href="#" class="footer__link">Terms of Service</a>
                 </div>
             </div>
         </div>

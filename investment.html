@@ -3,19 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Detailed investment breakdown for Real Self partnership in China - equipment costs, operating expenses, and ROI projections.">
-    <title>Investment Overview | Real Self</title>
+    <meta name="description" content="Detailed financial breakdown for Real Self partnership - customize scenarios and export projections.">
+    <title>Breakdown | Real Self</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Styles -->
     <link rel="stylesheet" href="css/styles.css">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100'/><text y='.9em' font-size='90' fill='%23fff'>R</text></svg>">
+
+    <style>
+        /* Preset Selector */
+        .preset-selector {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-3xl);
+        }
+
+        .preset-btn {
+            background: var(--color-gray-900);
+            border: 1px solid var(--color-gray-700);
+            color: var(--color-white);
+            padding: var(--spacing-lg) var(--spacing-2xl);
+            font-family: var(--font-display);
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 140px;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--color-gray-500);
+            background: var(--color-gray-800);
+        }
+
+        .preset-btn.active {
+            background: var(--color-white);
+            color: var(--color-black);
+            border-color: var(--color-white);
+        }
+
+        .preset-btn span {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--color-gray-400);
+            margin-top: 0.25rem;
+        }
+
+        .preset-btn.active span {
+            color: var(--color-gray-600);
+        }
+
+        /* Breakdown Grid */
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-2xl);
+        }
+
+        @media (max-width: 900px) {
+            .breakdown-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Breakdown Cards */
+        .breakdown-card {
+            background: var(--color-gray-900);
+            border: 1px solid var(--color-gray-700);
+            padding: var(--spacing-xl);
+        }
+
+        .breakdown-card__title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--color-gray-700);
+        }
+
+        /* Editable Values */
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid var(--color-gray-800);
+        }
+
+        .breakdown-row:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-row__label {
+            font-size: 0.875rem;
+            color: var(--color-gray-300);
+        }
+
+        .breakdown-row__value {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+        }
+
+        /* Editable value container */
+        .editable-value {
+            position: relative;
+            display: inline-block;
+        }
+
+        .editable-value__display {
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .editable-value:hover .editable-value__display {
+            background: var(--color-gray-700);
+        }
+
+        .editable-value__slider {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--color-gray-800);
+            border: 1px solid var(--color-gray-600);
+            padding: var(--spacing-md);
+            z-index: 100;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+
+        .editable-value:hover .editable-value__slider,
+        .editable-value__slider:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(5px);
+        }
+
+        .editable-value__slider input[type="range"] {
+            width: 100%;
+            margin: 0;
+        }
+
+        /* Summary row (totals) */
+        .breakdown-row--total {
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 2px solid var(--color-gray-600);
+            border-bottom: none;
+        }
+
+        .breakdown-row--total .breakdown-row__label {
+            font-weight: 600;
+            color: var(--color-white);
+        }
+
+        .breakdown-row--total .breakdown-row__value {
+            font-size: 1.25rem;
+            color: var(--color-white);
+        }
+
+        /* Highlight row */
+        .breakdown-row--highlight {
+            background: var(--color-gray-800);
+            margin: 0 calc(var(--spacing-xl) * -1);
+            padding: var(--spacing-md) var(--spacing-xl);
+        }
+
+        .breakdown-row--highlight .breakdown-row__value {
+            font-size: 1.5rem;
+        }
+
+        /* Results Summary */
+        .results-summary {
+            background: var(--color-gray-900);
+            border: 2px solid var(--color-white);
+            padding: var(--spacing-2xl);
+            margin-top: var(--spacing-2xl);
+        }
+
+        .results-summary__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-xl);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .results-summary__grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .results-summary__item-label {
+            font-size: 0.75rem;
+            color: var(--color-gray-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .results-summary__item-value {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        /* Export button */
+        .export-section {
+            text-align: center;
+            margin-top: var(--spacing-2xl);
+        }
+
+        /* Equipment table styling */
+        .equipment-table {
+            margin-top: var(--spacing-xl);
+        }
+
+        .equipment-table td:first-child {
+            color: var(--color-gray-300);
+        }
+
+        .equipment-table .highlight-col {
+            background: var(--color-gray-800);
+            font-weight: 600;
+        }
+
+        /* Chart container */
+        .chart-section {
+            margin-top: var(--spacing-3xl);
+        }
+
+        .chart-container {
+            background: var(--color-gray-900);
+            border: 1px solid var(--color-gray-700);
+            padding: var(--spacing-xl);
+        }
+
+        .chart-container__title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            margin-bottom: var(--spacing-lg);
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -26,10 +279,10 @@
 
                 <nav class="nav">
                     <ul class="nav__list">
-                        <li><a href="experience.html" class="nav__link" data-i18n="nav.experience">Experience</a></li>
-                        <li><a href="scenarios.html" class="nav__link" data-i18n="nav.scenarios">Calculator</a></li>
-                        <li><a href="investment.html" class="nav__link" data-i18n="nav.investment">Investment</a></li>
-                        <li><a href="partnership.html" class="nav__link" data-i18n="nav.partnership">Partnership</a></li>
+                        <li><a href="experience.html" class="nav__link">Experience</a></li>
+                        <li><a href="scenarios.html" class="nav__link">Scenarios</a></li>
+                        <li><a href="investment.html" class="nav__link">Breakdown</a></li>
+                        <li><a href="partnership.html" class="nav__link">Partnership</a></li>
                     </ul>
 
                     <div class="lang-toggle">
@@ -48,217 +301,282 @@
     </header>
 
     <!-- Page Header -->
-    <section class="section" style="padding-top: 150px; padding-bottom: var(--spacing-xl);">
+    <section class="section" style="padding-top: 150px; padding-bottom: var(--spacing-lg);">
         <div class="container">
-            <h1 class="mb-md" data-i18n="investment.title">Investment Overview</h1>
-            <p class="hero__tagline" style="font-size: 1.25rem;" data-i18n="investment.subtitle">Clear breakdown of costs and expected returns</p>
+            <h1 class="mb-md">Financial Breakdown</h1>
+            <p class="hero__tagline" style="font-size: 1.25rem;">Detailed costs and revenue projections</p>
         </div>
     </section>
 
-    <!-- Partner Investment -->
+    <!-- Breakdown Calculator -->
     <section class="section" style="padding-top: 0;">
         <div class="container">
-            <h2 class="mb-md" data-i18n="investment.partnerCosts.title">Partner Investment</h2>
-            <p class="mb-xl" style="color: var(--color-gray-400);" data-i18n="investment.partnerCosts.desc">Equipment and setup costs covered by the local partner</p>
+            <!-- Preset Buttons -->
+            <div class="preset-selector">
+                <button class="preset-btn" data-capacity="150">
+                    150
+                    <span>Small</span>
+                </button>
+                <button class="preset-btn active" data-capacity="250">
+                    250
+                    <span>Medium</span>
+                </button>
+                <button class="preset-btn" data-capacity="350">
+                    350
+                    <span>Large</span>
+                </button>
+            </div>
 
-            <div class="table-wrapper">
+            <!-- Breakdown Grid -->
+            <div class="breakdown-grid">
+                <!-- Revenue Breakdown -->
+                <div class="breakdown-card">
+                    <div class="breakdown-card__title">Weekly Revenue</div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Tickets per week</span>
+                        <span class="breakdown-row__value" id="ticketsPerWeek">2,100</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Ticket price</span>
+                        <div class="breakdown-row__value">
+                            <div class="editable-value">
+                                <span class="editable-value__display" id="ticketPriceDisplay">$32</span>
+                                <div class="editable-value__slider">
+                                    <input type="range" id="ticketPriceSlider" min="25" max="50" value="32">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Ticket revenue</span>
+                        <span class="breakdown-row__value" id="ticketRevenue">$67,200</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">VIP upgrades (10%)</span>
+                        <span class="breakdown-row__value" id="vipRevenue">$9,450</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Merchandise</span>
+                        <span class="breakdown-row__value" id="merchRevenue">$8,820</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Concessions</span>
+                        <span class="breakdown-row__value" id="concessionsRevenue">$7,350</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Photobooth</span>
+                        <span class="breakdown-row__value" id="photoboothRevenue">$1,092</span>
+                    </div>
+
+                    <div class="breakdown-row breakdown-row--total">
+                        <span class="breakdown-row__label">Weekly Total</span>
+                        <span class="breakdown-row__value" id="weeklyRevenue">$93,912</span>
+                    </div>
+                </div>
+
+                <!-- Costs Breakdown -->
+                <div class="breakdown-card">
+                    <div class="breakdown-card__title">Weekly Costs</div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Masks</span>
+                        <div class="breakdown-row__value">
+                            <div class="editable-value">
+                                <span class="editable-value__display" id="maskCostDisplay">$3,150</span>
+                                <div class="editable-value__slider">
+                                    <label style="font-size: 0.75rem; color: var(--color-gray-400);">Replacement %</label>
+                                    <input type="range" id="maskReplacementSlider" min="25" max="100" value="100">
+                                    <span style="font-size: 0.75rem;" id="maskReplacementDisplay">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Costumes</span>
+                        <div class="breakdown-row__value">
+                            <div class="editable-value">
+                                <span class="editable-value__display" id="costumeCostDisplay">$2,363</span>
+                                <div class="editable-value__slider">
+                                    <label style="font-size: 0.75rem; color: var(--color-gray-400);">Replacement %</label>
+                                    <input type="range" id="costumeReplacementSlider" min="25" max="100" value="25">
+                                    <span style="font-size: 0.75rem;" id="costumeReplacementDisplay">25%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Staff</span>
+                        <span class="breakdown-row__value" id="staffCost">$6,000</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Management</span>
+                        <span class="breakdown-row__value">$4,800</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Marketing (10%)</span>
+                        <span class="breakdown-row__value" id="marketingCost">$6,720</span>
+                    </div>
+
+                    <div class="breakdown-row">
+                        <span class="breakdown-row__label">Insurance & Misc</span>
+                        <span class="breakdown-row__value">$3,000</span>
+                    </div>
+
+                    <div class="breakdown-row breakdown-row--total">
+                        <span class="breakdown-row__label">Weekly Total</span>
+                        <span class="breakdown-row__value" id="weeklyCosts">$26,033</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Summary -->
+            <div class="results-summary">
+                <div class="results-summary__grid">
+                    <div>
+                        <div class="results-summary__item-label">Weekly Profit</div>
+                        <div class="results-summary__item-value" id="weeklyProfit">$67,879</div>
+                    </div>
+                    <div>
+                        <div class="results-summary__item-label">Monthly Profit</div>
+                        <div class="results-summary__item-value" id="monthlyProfit">$271,516</div>
+                    </div>
+                    <div>
+                        <div class="results-summary__item-label">Annual Profit</div>
+                        <div class="results-summary__item-value" id="annualProfit">$3.3M</div>
+                    </div>
+                    <div>
+                        <div class="results-summary__item-label">Breakeven</div>
+                        <div class="results-summary__item-value" id="breakevenPeriod">~2 mo</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="chart-section">
+                <div class="chart-container">
+                    <div class="chart-container__title">12-Month Projection</div>
+                    <div style="height: 300px;">
+                        <canvas id="projectionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export -->
+            <div class="export-section">
+                <button class="btn btn--outline" id="exportPdf">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export PDF
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Equipment Costs Table -->
+    <section class="section section--dark">
+        <div class="container">
+            <h2 class="mb-md">Partner Investment Requirements</h2>
+            <p class="mb-xl" style="color: var(--color-gray-400);">Equipment and setup costs by venue capacity</p>
+
+            <div class="table-wrapper equipment-table">
                 <table>
                     <thead>
                         <tr>
                             <th>Item</th>
-                            <th>150 Capacity</th>
-                            <th>250 Capacity</th>
-                            <th>350 Capacity</th>
+                            <th>150 Cap</th>
+                            <th class="highlight-col">250 Cap</th>
+                            <th>350 Cap</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td data-i18n="investment.partnerCosts.items.projectors">Professional Projectors (8,000+ lumens)</td>
-                            <td>$128,000 - $270,000</td>
-                            <td>$208,000 - $450,000</td>
-                            <td>$288,000 - $630,000</td>
+                            <td>Professional Projectors</td>
+                            <td>$128K - $270K</td>
+                            <td class="highlight-col">$208K - $450K</td>
+                            <td>$288K - $630K</td>
                         </tr>
                         <tr>
-                            <td data-i18n="investment.partnerCosts.items.sound">Sound System</td>
-                            <td>$40,000 - $60,000</td>
-                            <td>$50,000 - $70,000</td>
-                            <td>$60,000 - $80,000</td>
+                            <td>Sound System</td>
+                            <td>$40K - $60K</td>
+                            <td class="highlight-col">$50K - $70K</td>
+                            <td>$60K - $80K</td>
                         </tr>
                         <tr>
-                            <td data-i18n="investment.partnerCosts.items.computers">Media Servers</td>
-                            <td>$8,000 - $12,000</td>
-                            <td>$10,000 - $15,000</td>
-                            <td>$12,000 - $18,000</td>
+                            <td>Media Servers</td>
+                            <td>$8K - $12K</td>
+                            <td class="highlight-col">$10K - $15K</td>
+                            <td>$12K - $18K</td>
                         </tr>
                         <tr>
-                            <td data-i18n="investment.partnerCosts.items.branding">Branding & Signage</td>
-                            <td>$20,000 - $35,000</td>
-                            <td>$25,000 - $45,000</td>
-                            <td>$30,000 - $50,000</td>
+                            <td>Branding & Signage</td>
+                            <td>$20K - $35K</td>
+                            <td class="highlight-col">$25K - $45K</td>
+                            <td>$30K - $50K</td>
                         </tr>
                         <tr>
-                            <td data-i18n="investment.partnerCosts.items.masks">Initial Masks (1,000 units)</td>
-                            <td colspan="3" style="text-align: center;">$3,000 - $5,000</td>
+                            <td>Initial Masks & Costumes</td>
+                            <td colspan="3" style="text-align: center;">$8K - $15K</td>
                         </tr>
                         <tr>
-                            <td data-i18n="investment.partnerCosts.items.costumes">Initial Costumes (1,000 units)</td>
-                            <td colspan="3" style="text-align: center;">$5,000 - $10,000</td>
-                        </tr>
-                        <tr>
-                            <td data-i18n="investment.partnerCosts.items.venue">Venue Conditioning</td>
-                            <td>$30,000 - $60,000</td>
-                            <td>$50,000 - $80,000</td>
-                            <td>$70,000 - $100,000</td>
+                            <td>Venue Conditioning</td>
+                            <td>$30K - $60K</td>
+                            <td class="highlight-col">$50K - $80K</td>
+                            <td>$70K - $100K</td>
                         </tr>
                     </tbody>
                     <tfoot>
                         <tr style="border-top: 2px solid var(--color-white);">
-                            <td style="font-weight: 700;" data-i18n="investment.partnerCosts.total">Total Investment Range</td>
-                            <td style="font-weight: 700;">$236,000 - $400,000</td>
-                            <td style="font-weight: 700;">$320,000 - $550,000</td>
-                            <td style="font-weight: 700;">$420,000 - $750,000</td>
+                            <td style="font-weight: 700;">Total Investment</td>
+                            <td style="font-weight: 700;">$236K - $400K</td>
+                            <td class="highlight-col" style="font-weight: 700;">$320K - $550K</td>
+                            <td style="font-weight: 700;">$420K - $750K</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
-        </div>
-    </section>
 
-    <!-- Operating Costs -->
-    <section class="section section--dark">
-        <div class="container">
-            <h2 class="mb-md" data-i18n="investment.operatingCosts.title">Weekly Operating Costs</h2>
-            <p class="mb-xl" style="color: var(--color-gray-400);" data-i18n="investment.operatingCosts.desc">Ongoing costs for each week of operation</p>
-
-            <div class="grid grid--2">
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Item</th>
-                                <th>Cost (USD)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td data-i18n="investment.operatingCosts.items.mask">Masks ($1.50/unit)</td>
-                                <td>$1.50 per mask</td>
-                            </tr>
-                            <tr>
-                                <td data-i18n="investment.operatingCosts.items.costume">Costume Replacement ($4.50/unit)</td>
-                                <td>$4.50 per costume</td>
-                            </tr>
-                            <tr>
-                                <td data-i18n="investment.operatingCosts.items.staff">Staff (1 per 25 @ $50/day)</td>
-                                <td>$50/day per staff</td>
-                            </tr>
-                            <tr>
-                                <td data-i18n="investment.operatingCosts.items.management">Management (producer + 2 techs)</td>
-                                <td>$4,800/week fixed</td>
-                            </tr>
-                            <tr>
-                                <td data-i18n="investment.operatingCosts.items.marketing">Marketing (10% of tickets)</td>
-                                <td>10% of ticket revenue</td>
-                            </tr>
-                            <tr>
-                                <td data-i18n="investment.operatingCosts.items.insurance">Insurance & Miscellaneous</td>
-                                <td>$3,000/week fixed</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="card">
-                    <h3 class="card__title">Cost Notes</h3>
-                    <ul style="list-style: none; color: var(--color-gray-400);">
-                        <li style="margin-bottom: 1rem;">
-                            <strong style="color: var(--color-white);">Masks:</strong> $1.50 per unit. Can be disposable (100% replacement) or partial replacement (25-50%).
-                        </li>
-                        <li style="margin-bottom: 1rem;">
-                            <strong style="color: var(--color-white);">Costumes:</strong> $4.50 per unit replacement. Industrial washing allows lower replacement rates (25% typical).
-                        </li>
-                        <li style="margin-bottom: 1rem;">
-                            <strong style="color: var(--color-white);">Venue Rent:</strong> Not included - partner provides the space as part of their contribution.
-                        </li>
-                    </ul>
-                </div>
+            <div class="card mt-xl" style="background: var(--color-gray-800); border-color: var(--color-gray-600);">
+                <p style="color: var(--color-gray-300); margin: 0;">
+                    <strong style="color: var(--color-white);">Note:</strong>
+                    Venue rent not included - partner provides the space. All figures in USD.
+                </p>
             </div>
-        </div>
-    </section>
-
-    <!-- ROI Scenarios -->
-    <section class="section">
-        <div class="container">
-            <h2 class="mb-md" data-i18n="investment.roi.title">Return on Investment</h2>
-            <p class="mb-xl" style="color: var(--color-gray-400);" data-i18n="investment.roi.scenarios">By Venue Capacity</p>
-
-            <!-- Revenue Share Banner -->
-            <div style="background: var(--color-gray-800); border: 1px solid var(--color-gray-600); padding: 1rem 1.5rem; margin-bottom: 1.5rem; text-align: center;">
-                <span style="color: var(--color-gray-300);">Revenue Split:</span>
-                <strong style="color: var(--color-white); font-size: 1.125rem; margin-left: 0.5rem;">Partner 70% / Real Self 30%</strong>
-            </div>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th data-i18n="investment.roi.headers.capacity">Capacity</th>
-                            <th data-i18n="investment.roi.headers.investment">Investment</th>
-                            <th>Weekly Gross</th>
-                            <th data-i18n="investment.roi.headers.monthlyNet">Monthly Partner (70%)</th>
-                            <th data-i18n="investment.roi.headers.breakeven">Breakeven</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>150 people</td>
-                            <td>~$318,000</td>
-                            <td>$56,000</td>
-                            <td>$117,000</td>
-                            <td>~3 months</td>
-                        </tr>
-                        <tr>
-                            <td>250 people</td>
-                            <td>~$435,000</td>
-                            <td>$94,000</td>
-                            <td>$193,000</td>
-                            <td>~2 months</td>
-                        </tr>
-                        <tr>
-                            <td>350 people</td>
-                            <td>~$585,000</td>
-                            <td>$131,000</td>
-                            <td>$269,000</td>
-                            <td>~2 months</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p class="mt-lg" style="color: var(--color-gray-500); font-size: 0.875rem;">
-                Based on: $32 USD ticket price, 4 days/week, 3 shows/day, 70% occupancy. Includes all revenue streams (VIP, merch, concessions, photobooth). Partner receives 70% of gross profit after operating costs.
-            </p>
         </div>
     </section>
 
     <!-- Market Comparison -->
-    <section class="section section--dark">
+    <section class="section">
         <div class="container">
-            <h2 class="mb-md" data-i18n="investment.comparison.title">Market Comparison</h2>
-            <p class="mb-xl" style="color: var(--color-gray-400);" data-i18n="investment.comparison.desc">How Real Self compares to other immersive experiences</p>
+            <h2 class="mb-md">Market Comparison</h2>
+            <p class="mb-xl" style="color: var(--color-gray-400);">How Real Self compares to other immersive experiences in China</p>
 
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th data-i18n="investment.comparison.headers.experience">Experience</th>
-                            <th data-i18n="investment.comparison.headers.ticketPrice">Ticket Price</th>
-                            <th data-i18n="investment.comparison.headers.duration">Duration</th>
+                            <th>Experience</th>
+                            <th>Ticket Price</th>
+                            <th>Duration</th>
                             <th>Market</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td data-i18n="investment.comparison.teamlab">teamLab Shanghai</td>
+                            <td>teamLab Shanghai</td>
                             <td>RMB 249 (~$35)</td>
                             <td>Unlimited (avg 2-3 hrs)</td>
                             <td>China</td>
@@ -276,7 +594,7 @@
                             <td>USA/China</td>
                         </tr>
                         <tr style="background: var(--color-gray-800);">
-                            <td style="font-weight: 700;" data-i18n="investment.comparison.realself">Real Self China</td>
+                            <td style="font-weight: 700;">Real Self China</td>
                             <td style="font-weight: 700;">RMB 250 (~$35)</td>
                             <td style="font-weight: 700;">90 minutes</td>
                             <td style="font-weight: 700;">China (proposed)</td>
@@ -287,41 +605,14 @@
         </div>
     </section>
 
-    <!-- China Market Data -->
-    <section class="section">
-        <div class="container">
-            <h2 class="text-center mb-xl">China Immersive Market</h2>
-            <div class="grid grid--3">
-                <div class="card text-center">
-                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">$11.7B</div>
-                    <p class="card__text">2023 Market Size</p>
-                </div>
-                <div class="card text-center">
-                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">$51B</div>
-                    <p class="card__text">2030 Projected</p>
-                </div>
-                <div class="card text-center">
-                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">23.4%</div>
-                    <p class="card__text">Annual Growth (CAGR)</p>
-                </div>
-            </div>
-            <p class="text-center mt-xl" style="color: var(--color-gray-500);">
-                Source: Grand View Research - China Immersive Entertainment Market Report
-            </p>
-        </div>
-    </section>
-
     <!-- CTA -->
     <section class="section section--dark">
         <div class="container text-center">
-            <h2 class="mb-lg">Model Your Own Scenario</h2>
-            <p class="mb-xl" style="max-width: 600px; margin-left: auto; margin-right: auto; color: var(--color-gray-400);">
-                Use our interactive calculator to customize capacity, pricing, and see real-time projections.
+            <h2 class="mb-md">Ready to Move Forward?</h2>
+            <p class="mb-xl" style="color: var(--color-gray-400); max-width: 500px; margin-left: auto; margin-right: auto;">
+                Explore our partnership model to understand the deal structure and terms.
             </p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="scenarios.html" class="btn btn--primary" data-i18n="nav.scenarios">Calculator</a>
-                <a href="partnership.html" class="btn btn--outline" data-i18n="nav.partnership">Partnership</a>
-            </div>
+            <a href="partnership.html" class="btn btn--primary">View Partnership Model</a>
         </div>
     </section>
 
@@ -330,17 +621,217 @@
         <div class="container">
             <div class="footer__inner">
                 <p class="footer__text">
-                    &copy; 2024 <span data-i18n="footer.copyright">Real Self Experience. All rights reserved.</span>
+                    &copy; 2024 <span>Real Self Experience. All rights reserved.</span>
                 </p>
                 <div class="footer__links">
-                    <a href="#" class="footer__link" data-i18n="footer.links.privacy">Privacy Policy</a>
-                    <a href="#" class="footer__link" data-i18n="footer.links.terms">Terms of Service</a>
+                    <a href="#" class="footer__link">Privacy Policy</a>
+                    <a href="#" class="footer__link">Terms of Service</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/main.js"></script>
+    <script>
+        // Preset data
+        const presets = {
+            150: {
+                ticketsPerWeek: 1260,
+                weeklyRevenue: 56347,
+                investment: { min: 236000, max: 400000, mid: 318000 }
+            },
+            250: {
+                ticketsPerWeek: 2100,
+                weeklyRevenue: 93912,
+                investment: { min: 320000, max: 550000, mid: 435000 }
+            },
+            350: {
+                ticketsPerWeek: 2940,
+                weeklyRevenue: 131477,
+                investment: { min: 420000, max: 750000, mid: 585000 }
+            }
+        };
+
+        // Current state
+        let currentCapacity = 250;
+        let ticketPrice = 32;
+        let maskReplacement = 100;
+        let costumeReplacement = 25;
+
+        // DOM elements
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        const ticketPriceSlider = document.getElementById('ticketPriceSlider');
+        const maskReplacementSlider = document.getElementById('maskReplacementSlider');
+        const costumeReplacementSlider = document.getElementById('costumeReplacementSlider');
+
+        // Format currency
+        function formatCurrency(num) {
+            if (num >= 1000000) {
+                return '$' + (num / 1000000).toFixed(1) + 'M';
+            }
+            return '$' + num.toLocaleString();
+        }
+
+        // Calculate and update display
+        function calculate() {
+            const preset = presets[currentCapacity];
+            const tickets = preset.ticketsPerWeek;
+
+            // Revenue
+            const ticketRev = tickets * ticketPrice;
+            const vipRev = tickets * 0.1 * 45;
+            const merchRev = tickets * 0.7 * 6;
+            const concessionsRev = tickets * 0.7 * 5;
+            const photoboothRev = tickets * 0.13 * 4;
+            const totalRevenue = ticketRev + vipRev + merchRev + concessionsRev + photoboothRev;
+
+            // Costs
+            const maskCost = tickets * (maskReplacement / 100) * 1.5;
+            const costumeCost = tickets * (costumeReplacement / 100) * 4.5;
+            const staffCount = Math.ceil(currentCapacity / 25);
+            const staffCost = staffCount * 4 * 3 * 50; // 4 days, 3 shows
+            const managementCost = 4800;
+            const marketingCost = ticketRev * 0.1;
+            const insuranceCost = 3000;
+            const totalCosts = maskCost + costumeCost + staffCost + managementCost + marketingCost + insuranceCost;
+
+            // Profit
+            const weeklyProfit = totalRevenue - totalCosts;
+            const monthlyProfit = weeklyProfit * 4;
+            const annualProfit = monthlyProfit * 12;
+            const breakeven = Math.ceil(preset.investment.mid / monthlyProfit);
+
+            // Update display
+            document.getElementById('ticketsPerWeek').textContent = tickets.toLocaleString();
+            document.getElementById('ticketPriceDisplay').textContent = '$' + ticketPrice;
+            document.getElementById('ticketRevenue').textContent = formatCurrency(ticketRev);
+            document.getElementById('vipRevenue').textContent = formatCurrency(vipRev);
+            document.getElementById('merchRevenue').textContent = formatCurrency(merchRev);
+            document.getElementById('concessionsRevenue').textContent = formatCurrency(concessionsRev);
+            document.getElementById('photoboothRevenue').textContent = formatCurrency(photoboothRev);
+            document.getElementById('weeklyRevenue').textContent = formatCurrency(totalRevenue);
+
+            document.getElementById('maskCostDisplay').textContent = formatCurrency(maskCost);
+            document.getElementById('maskReplacementDisplay').textContent = maskReplacement + '%';
+            document.getElementById('costumeCostDisplay').textContent = formatCurrency(costumeCost);
+            document.getElementById('costumeReplacementDisplay').textContent = costumeReplacement + '%';
+            document.getElementById('staffCost').textContent = formatCurrency(staffCost);
+            document.getElementById('marketingCost').textContent = formatCurrency(marketingCost);
+            document.getElementById('weeklyCosts').textContent = formatCurrency(totalCosts);
+
+            document.getElementById('weeklyProfit').textContent = formatCurrency(weeklyProfit);
+            document.getElementById('monthlyProfit').textContent = formatCurrency(monthlyProfit);
+            document.getElementById('annualProfit').textContent = formatCurrency(annualProfit);
+            document.getElementById('breakevenPeriod').textContent = '~' + breakeven + ' mo';
+
+            // Update chart
+            updateChart(monthlyProfit, preset.investment.mid);
+
+            // Highlight correct column in equipment table
+            document.querySelectorAll('.highlight-col').forEach(el => el.classList.remove('highlight-col'));
+            const colIndex = currentCapacity === 150 ? 1 : currentCapacity === 250 ? 2 : 3;
+            document.querySelectorAll('.equipment-table tr').forEach(row => {
+                const cells = row.querySelectorAll('td, th');
+                if (cells[colIndex]) {
+                    cells[colIndex].classList.add('highlight-col');
+                }
+            });
+        }
+
+        // Chart
+        let chart;
+        function updateChart(monthlyProfit, investment) {
+            const ctx = document.getElementById('projectionChart').getContext('2d');
+
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const cumulativeProfit = months.map((_, i) => (i + 1) * monthlyProfit);
+
+            if (chart) {
+                chart.data.datasets[0].data = cumulativeProfit;
+                chart.data.datasets[1].data = months.map(() => investment);
+                chart.update();
+            } else {
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [
+                            {
+                                label: 'Cumulative Profit',
+                                data: cumulativeProfit,
+                                borderColor: '#ffffff',
+                                backgroundColor: 'rgba(255,255,255,0.1)',
+                                fill: true,
+                                tension: 0.3
+                            },
+                            {
+                                label: 'Investment',
+                                data: months.map(() => investment),
+                                borderColor: '#666666',
+                                borderDash: [5, 5],
+                                fill: false,
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: { color: '#999' }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    color: '#999',
+                                    callback: value => '$' + (value/1000000).toFixed(1) + 'M'
+                                },
+                                grid: { color: '#333' }
+                            },
+                            x: {
+                                ticks: { color: '#999' },
+                                grid: { color: '#333' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Event listeners
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                presetBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCapacity = parseInt(btn.dataset.capacity);
+                calculate();
+            });
+        });
+
+        ticketPriceSlider.addEventListener('input', (e) => {
+            ticketPrice = parseInt(e.target.value);
+            calculate();
+        });
+
+        maskReplacementSlider.addEventListener('input', (e) => {
+            maskReplacement = parseInt(e.target.value);
+            calculate();
+        });
+
+        costumeReplacementSlider.addEventListener('input', (e) => {
+            costumeReplacement = parseInt(e.target.value);
+            calculate();
+        });
+
+        // Export PDF
+        document.getElementById('exportPdf').addEventListener('click', () => {
+            window.print();
+        });
+
+        // Initial calculation
+        calculate();
+    </script>
 </body>
 </html>
