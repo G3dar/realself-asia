@@ -3,181 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Real Self - An immersive theatrical experience seeking partnership opportunities in China. 100,000+ participants worldwide.">
-    <title>Real Self | China Partnership</title>
+    <meta name="description" content="Real Self - An immersive theatrical experience. Enter to explore partnership opportunities.">
+    <title>Real Self | Enter</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <!-- Styles -->
-    <link rel="stylesheet" href="css/styles.css">
-
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100'/><text y='.9em' font-size='90' fill='%23fff'>R</text></svg>">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Background */
+        .landing {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .landing__bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .landing__bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            filter: grayscale(30%);
+        }
+
+        .landing__overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.95) 100%);
+            z-index: 1;
+        }
+
+        /* Content */
+        .landing__content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+            max-width: 500px;
+        }
+
+        /* Logo */
+        .landing__logo {
+            margin-bottom: 3rem;
+        }
+
+        .landing__logo img {
+            max-width: 350px;
+            width: 100%;
+            height: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Tagline */
+        .landing__tagline {
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 3rem;
+        }
+
+        /* Form */
+        .landing__form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .landing__input-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .landing__input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            letter-spacing: 0.1em;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .landing__input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.2em;
+        }
+
+        .landing__input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .landing__btn {
+            padding: 1rem 3rem;
+            background: #fff;
+            color: #000;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .landing__btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .landing__btn:active {
+            transform: translateY(0);
+        }
+
+        /* Error message */
+        .landing__error {
+            color: #ff4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .landing__error.visible {
+            opacity: 1;
+        }
+
+        /* Hint */
+        .landing__hint {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+            font-style: italic;
+        }
+
+        /* Animated lines */
+        .landing__lines {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .landing__line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .landing__line--h {
+            height: 1px;
+            width: 100%;
+            animation: moveLine 20s linear infinite;
+        }
+
+        .landing__line--v {
+            width: 1px;
+            height: 100%;
+            animation: moveLine 25s linear infinite reverse;
+        }
+
+        @keyframes moveLine {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .landing__logo img {
+                max-width: 280px;
+            }
+
+            .landing__tagline {
+                font-size: 0.75rem;
+                letter-spacing: 0.2em;
+            }
+        }
+
+        /* Success animation */
+        .landing--success .landing__content {
+            animation: fadeOut 0.5s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header__inner">
-                <a href="index.html" class="logo">
-                    <img src="images/logo-white.jpg" alt="Real Self" class="logo__img">
-                </a>
-
-                <nav class="nav">
-                    <ul class="nav__list">
-                        <li><a href="experience.html" class="nav__link" data-i18n="nav.experience">Experience</a></li>
-                        <li><a href="scenarios.html" class="nav__link" data-i18n="nav.scenarios">Calculator</a></li>
-                        <li><a href="investment.html" class="nav__link" data-i18n="nav.investment">Investment</a></li>
-                        <li><a href="partnership.html" class="nav__link" data-i18n="nav.partnership">Partnership</a></li>
-                        <li><a href="contact.html" class="nav__link" data-i18n="nav.contact">Contact</a></li>
-                    </ul>
-
-                    <div class="lang-toggle">
-                        <button class="lang-toggle__btn active" data-lang="en">EN</button>
-                        <button class="lang-toggle__btn" data-lang="zh">中文</button>
-                    </div>
-
-                    <button class="menu-toggle" aria-label="Toggle menu">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                </nav>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <!-- Background -->
-        <div class="hero__bg">
-            <img src="images/hero-poster.jpg" alt="Real Self Experience - Person wearing geometric white mask">
+    <div class="landing" id="landing">
+        <!-- Background Image -->
+        <div class="landing__bg">
+            <img src="images/hero-poster.jpg" alt="Real Self">
         </div>
 
         <!-- Overlay -->
-        <div class="hero__overlay"></div>
+        <div class="landing__overlay"></div>
 
-        <!-- Geometric Lines Animation -->
-        <div class="hero__lines">
-            <div class="hero__line hero__line--h" style="top: 20%;"></div>
-            <div class="hero__line hero__line--h" style="top: 50%; animation-delay: -3s;"></div>
-            <div class="hero__line hero__line--h" style="top: 80%; animation-delay: -6s;"></div>
-            <div class="hero__line hero__line--v" style="left: 15%; animation-delay: -2s;"></div>
-            <div class="hero__line hero__line--v" style="left: 50%; animation-delay: -5s;"></div>
-            <div class="hero__line hero__line--v" style="left: 85%; animation-delay: -8s;"></div>
+        <!-- Animated Lines -->
+        <div class="landing__lines">
+            <div class="landing__line landing__line--h" style="top: 20%;"></div>
+            <div class="landing__line landing__line--h" style="top: 50%; animation-delay: -7s;"></div>
+            <div class="landing__line landing__line--h" style="top: 80%; animation-delay: -14s;"></div>
+            <div class="landing__line landing__line--v" style="left: 15%; animation-delay: -3s;"></div>
+            <div class="landing__line landing__line--v" style="left: 50%; animation-delay: -10s;"></div>
+            <div class="landing__line landing__line--v" style="left: 85%; animation-delay: -17s;"></div>
         </div>
 
         <!-- Content -->
-        <div class="hero__content">
-            <div class="hero__logo">
+        <div class="landing__content">
+            <div class="landing__logo">
                 <img src="images/logo-tagline.jpg" alt="Real Self - A Human Immersive Experience">
             </div>
 
-            <div class="hero__stats">
-                <div class="stat">
-                    <div class="stat__number">100,000+</div>
-                    <div class="stat__label" data-i18n="hero.stats.participants">Participants</div>
-                </div>
-                <div class="stat">
-                    <div class="stat__number">2</div>
-                    <div class="stat__label" data-i18n="hero.stats.cities">Cities</div>
-                </div>
-                <div class="stat">
-                    <div class="stat__number">98%</div>
-                    <div class="stat__label" data-i18n="hero.stats.satisfaction">Satisfaction</div>
-                </div>
-            </div>
+            <p class="landing__tagline">Private Partnership Portal</p>
 
-            <p class="hero__tagline" data-i18n="hero.tagline">
-                A transformative journey where anonymity reveals authenticity
-            </p>
+            <form class="landing__form" id="accessForm">
+                <div class="landing__input-wrapper">
+                    <input
+                        type="password"
+                        class="landing__input"
+                        id="accessCode"
+                        placeholder="Enter Access Code"
+                        autocomplete="off"
+                    >
+                    <p class="landing__error" id="errorMsg">Invalid access code</p>
+                </div>
+                <button type="submit" class="landing__btn">Enter</button>
+            </form>
 
-            <a href="partnership.html" class="btn btn--primary btn--large" data-i18n="hero.cta">
-                Explore Partnership
-            </a>
+            <p class="landing__hint">Access restricted to invited partners</p>
         </div>
-    </section>
+    </div>
 
-    <!-- Quick Overview Section -->
-    <section class="section">
-        <div class="container">
-            <div class="grid grid--3">
-                <div class="card fade-on-scroll">
-                    <svg class="card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                    <h3 class="card__title" data-i18n="experience.features.duration.title">Duration</h3>
-                    <p class="card__text" data-i18n="experience.features.duration.desc">75 minutes experience + 15 minutes transition</p>
-                </div>
+    <script>
+        const form = document.getElementById('accessForm');
+        const input = document.getElementById('accessCode');
+        const error = document.getElementById('errorMsg');
+        const landing = document.getElementById('landing');
 
-                <div class="card fade-on-scroll" style="animation-delay: 0.1s;">
-                    <svg class="card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                    <h3 class="card__title" data-i18n="experience.features.capacity.title">Capacity</h3>
-                    <p class="card__text" data-i18n="experience.features.capacity.desc">150-350 participants per session</p>
-                </div>
+        // Password hash (simple obfuscation - not high security, just light protection)
+        const correctCode = 'Thankyou';
 
-                <div class="card fade-on-scroll" style="animation-delay: 0.2s;">
-                    <svg class="card__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    <h3 class="card__title" data-i18n="experience.features.phones.title">Digital Detox</h3>
-                    <p class="card__text" data-i18n="experience.features.phones.desc">No phones - private lockers provided</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    <!-- Quote Section -->
-    <section class="section section--dark">
-        <div class="container container--narrow">
-            <blockquote class="quote fade-on-scroll">
-                <p class="quote__text" data-i18n="experience.quote.text">"Be yourself; everyone else is already taken."</p>
-                <cite class="quote__author" data-i18n="experience.quote.author">Oscar Wilde</cite>
-            </blockquote>
-        </div>
-    </section>
+            const entered = input.value.trim();
 
-    <!-- CTA Section -->
-    <section class="section">
-        <div class="container text-center">
-            <h2>China Market Opportunity</h2>
-            <p class="mb-xl" style="max-width: 600px; margin-left: auto; margin-right: auto;">
-                The immersive entertainment market in China is projected to reach $51 billion by 2030.
-                Partner with Real Self to capture this extraordinary opportunity.
-            </p>
-            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <a href="scenarios.html" class="btn btn--primary" data-i18n="nav.scenarios">Calculator</a>
-                <a href="contact.html" class="btn btn--outline" data-i18n="nav.contact">Contact</a>
-            </div>
-        </div>
-    </section>
+            if (entered === correctCode) {
+                // Success - redirect to home
+                landing.classList.add('landing--success');
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer__inner">
-                <p class="footer__text">
-                    &copy; 2024 <span data-i18n="footer.copyright">Real Self Experience. All rights reserved.</span>
-                </p>
-                <div class="footer__links">
-                    <a href="#" class="footer__link" data-i18n="footer.links.privacy">Privacy Policy</a>
-                    <a href="#" class="footer__link" data-i18n="footer.links.terms">Terms of Service</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+                // Store session
+                sessionStorage.setItem('rsAccess', 'granted');
 
-    <!-- Scripts -->
-    <script src="js/main.js"></script>
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 500);
+            } else {
+                // Error
+                error.classList.add('visible');
+                input.style.borderColor = '#ff4444';
+
+                setTimeout(() => {
+                    error.classList.remove('visible');
+                    input.style.borderColor = '';
+                }, 2000);
+            }
+        });
+
+        // Clear error on input
+        input.addEventListener('input', function() {
+            error.classList.remove('visible');
+            input.style.borderColor = '';
+        });
+    </script>
 </body>
 </html>

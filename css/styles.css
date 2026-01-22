@@ -142,7 +142,7 @@ a:hover {
 }
 
 .logo__img {
-    height: 32px;
+    height: 50px;
     width: auto;
     filter: brightness(0) invert(1);
 }
@@ -341,7 +341,7 @@ a:hover {
 }
 
 .hero__logo img {
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
     height: auto;
     filter: brightness(0) invert(1);
