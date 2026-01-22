@@ -137,6 +137,17 @@ a:hover {
 }
 
 .logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo__img {
+    height: 32px;
+    width: auto;
+    filter: brightness(0) invert(1);
+}
+
+.logo__text {
     font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 700;
@@ -144,7 +155,7 @@ a:hover {
     text-transform: uppercase;
 }
 
-.logo span {
+.logo__text span {
     font-weight: 300;
 }
 
@@ -322,6 +333,18 @@ a:hover {
     text-transform: uppercase;
     margin-bottom: var(--spacing-md);
     color: var(--color-gray-400);
+}
+
+.hero__logo {
+    margin-bottom: var(--spacing-xl);
+    animation: fadeInUp 1s ease;
+}
+
+.hero__logo img {
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+    filter: brightness(0) invert(1);
 }
 
 .hero__stats {
